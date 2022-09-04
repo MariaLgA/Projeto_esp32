@@ -57,25 +57,3 @@ function mqtt_message(topic,message,packet)
       })
 }      
     
-
-
-
-
-
-
-
-
-
-
-
-
-/*/Mostrar topicos e resultados "separadamentes":
-for (x in J)
-{
-    console.log(x,J[x]);
-}
-
-//Mostrar somente um dos topicos e seu resultado
-console.log(J.Temperature);
-var J = JSON.parse(message);
-/*/
