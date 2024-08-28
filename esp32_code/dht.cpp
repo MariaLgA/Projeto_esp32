@@ -17,7 +17,7 @@ PubSubClient mqttClient(wifiClient);
 DHT dht(DHTPIN, DHTTYPE);
 
 WiFiUDP udp;
-NTPClient ntp(udp, "a.st1.ntp.br",0, 60000);
+NTPClient ntp(udp, "a.st1.ntp.br", 0, 60000);
 
 void setup() 
 {
@@ -29,61 +29,63 @@ void setup()
   
   // Conectar WiFi
   const char *SSID = "....."; 
-  const char *PWD = "......";
+  const char *PWD = ".....";
+  wifi_connect(SSID, PWD);
 
-  WiFi.begin(SSID,PWD);
-
-  //servidoor ntp
+  //servidor ntp
   ntp.begin();
   ntp.forceUpdate(); 
-  
-  wifi_connect();
 
   //MQTT
-  char *mqttServer = "192.168.1.108";
+  char *mqttServer = "192.168.1.10";
   int mqttPort = 1883;
 
-  mqtt_connect();
+  mqtt_connect(mqttServer, mqttPort);
 
   //Mac Address ESP
   chipid= ESP.getEfuseMac();
-  ets_printf("%llu\n",chipid);
-
+  Serial.printf("%llu\n",chipid);
 }
-
-  
+ 
 //Reconexao
-void reconnect ()
+void mqtt_reconnect ()
 {
-  Serial.printf("Connecting to Mqtt Broker\n");
   while (!mqttClient.connected())
   {
     Serial.printf("Reconnecting to Mqtt Broker ..\n");
 
     if (mqttClient.connect("ESP32_DHT11"))
     {
-      Serial.printf("Conectando");
+      Serial.printf("Conecting \n");
       mqttClient.subscribe("/commands");
     }
   }
-
+  Serial.printf("Conected to Mqtt Broker ...\n");
 }
 
-void wifi_connect()
+void wifi_connect (const char *SSID, const char *PWD)
 {
+  WiFi.begin(SSID,PWD);
+
   while (WiFi.status() != WL_CONNECTED)
   {
-    Serial.printf(".");
+    Serial.printf("...");
     delay(500);
   }
-  Serial.print("Connected.");
+  Serial.print("Connected.\n");
   Serial.println(WiFi.localIP());
 }
 
-void mqtt_connect(server, port)
+void mqtt_connect (const *server, int port)
 {
   mqttClient.setServer(server, port); 
-  mqttClient.setCallback(callback); 
+  mqttClient.setCallback(callback);
+
+  if (mqttClient.connect("ESP32_DHT11"))
+  {
+    Serial.printf("Conecting ...\n");
+    mqttClient.subscribe("/commands");
+  }
 }
 
 //CallBack
@@ -100,21 +102,21 @@ void loop()
   float humidity = dht.readHumidity();
   float temperature = dht.readTemperature();
 
-  if (isnan(h) || isnan(t)) 
+  if (isnan(humidity) || isnan(temperature)) 
   {
-    Serial.println("Failed to read from DHT sensor!");
+    Serial.println("Failed to read from DHT sensor!\n");
     return;
   }
   Serial.printf("Umidade: %.2f  \n", humidity, "%");
   Serial.printf("Temperatura: %.2f °C \n", temperature);
 
   // pega a hora via ntp
-  hora = ntp.getEpochTime(); 
+  long time = ntp.getEpochTime(); 
 
   // Verificando conexao
   if (!mqttClient.connected())
   {
-    reconnect();
+    mqtt_reconnect();
   }
   mqttClient.loop();
   
@@ -128,9 +130,10 @@ void loop()
   if(now - last_time >5000)
   {
     //DHT11 Read
-    char data [128]={0};
-    snprintf(data,128,"{\"Id\":%llu,\"Temperature\":%d,\"Hora\":%ld,\"Humidity\":%d}",chipid, temperature, hora, humidity);
-    mqttClient.publish("dht/temp",data);
+    char data [128] = {0};
+    snprintf(data,128,"{\"Id\":%llu,\"Temperature\":%d,\"Hora\":%ld,\"Humidity\":%d}",chipid, esp_random(), time, esp_random());
+    
+    mqttClient.publish("dht/data", data);
     
     last_time=now;
   }
