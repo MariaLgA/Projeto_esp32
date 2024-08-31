@@ -12,6 +12,24 @@ const client_database = new Client(
 
 client_database.connect();
 
+// Conexao MQTT
+const port = "1883";
+const host = `mqtt://192.168.1.112:${port}`;
+
+var client = mqtt.connect(host);
+let topic = '#';
+
+client.on('connect', function success()
+{
+  console.log("Connecting MQTT");
+  client.subscribe(topic, function mqtt_subscribe()
+  {
+      console.log("Subscribe to" + topic);
+  });
+});
+
+client.on('message', mqtt_message);
+
 function mqtt_message(topic, message)
 {
     var J = JSON.parse(message);
@@ -36,21 +54,3 @@ function mqtt_message(topic, message)
       }
     });
 }
-
-// Conexao MQTT
-const port = "1883";
-const host = `mqtt://192.168.1.112:${port}`;
-
-var client = mqtt.connect(host);
-let topic = '#';
-
-client.on('connect', function success()
-{
-  console.log("Connecting MQTT");
-  client.subscribe(topic, function mqtt_subscribe()
-  {
-      console.log("Subscribe to" + topic);
-  });
-});
-
-client.on('message', mqtt_message);
