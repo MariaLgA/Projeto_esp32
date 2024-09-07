@@ -24,7 +24,7 @@ void setup()
   Serial.begin(115200);
   Serial.println("DHTxx test!");
   
-  //inciializa o sensor dht
+  //incializa o sensor dht
   dht.begin();
   
   // Conectar WiFi
@@ -60,7 +60,7 @@ void mqtt_reconnect ()
       mqttClient.subscribe("/commands");
     }
   }
-  Serial.printf("Conected to Mqtt Broker ...\n");
+  Serial.printf("Connected to Mqtt Broker ...\n");
 }
 
 void wifi_connect (const char *SSID, const char *PWD)
@@ -76,23 +76,24 @@ void wifi_connect (const char *SSID, const char *PWD)
   Serial.println(WiFi.localIP());
 }
 
-void mqtt_connect (const *server, int port)
+void mqtt_connect (const char *server, int port)
 {
   mqttClient.setServer(server, port); 
-  mqttClient.setCallback(callback);
+  mqttClient.setCallback(mqtt_callback);
 
   if (mqttClient.connect("ESP32_DHT11"))
   {
-    Serial.printf("Conecting ...\n");
+    Serial.printf("Connecting ...\n");
     mqttClient.subscribe("/commands");
   }
 }
 
 //CallBack
-void callback(char* topic, byte* payload, unsigned int length)
+void mqtt_callback(char* topic, byte* payload, unsigned int length)
 {
   Serial.print("Callback - Message:");
-  for (int i = 0; i < length; i++) {
+  for (uint i = 0; i < length; i++) 
+  {
     Serial.print((char)payload[i]);
   }
 }
