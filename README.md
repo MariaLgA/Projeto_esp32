@@ -9,4 +9,4 @@ Leitura do sensor de temperatura e humidade - DHT11 através do microcontrolador
 ![image](/Imagens/grafana_r.png)
 
 # Notas:
-O código atual somente efetua a leitura dos dados vindo do sensor dht11, porém retirando o comentário feito logo depois do envio dos dados do sensor, é possível habilitar o envio de dados como random, retirando então inicialmente a necessidade de um sensor ou componente similar.
+O código atual somente efetua a leitura dos dados vindo do sensor dht11, porém é plausível também usar dados random possibilitando que você faça o projeto mesmo sem o sensor.
