@@ -24,7 +24,7 @@ void setup()
   Serial.begin(115200);
   Serial.println("DHTxx test!");
   
-  //incializa o sensor dht
+  //inicializa o sensor dht
   dht.begin();
   
   // Conectar WiFi
@@ -56,7 +56,7 @@ void mqtt_reconnect ()
 
     if (mqttClient.connect("ESP32_DHT11"))
     {
-      Serial.printf("Conecting \n");
+      Serial.printf("Connecting \n");
       mqttClient.subscribe("/commands");
     }
   }
