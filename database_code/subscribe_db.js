@@ -14,7 +14,7 @@ client_database.connect();
 
 // Conexao MQTT
 const port = "1883";
-const host = `mqtt://192.168.1.112:${port}`;
+const host = `mqtt://127.0.0.1:${port}`;
 
 var client = mqtt.connect(host);
 let topic = '#';
