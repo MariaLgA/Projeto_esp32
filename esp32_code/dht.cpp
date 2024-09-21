@@ -132,7 +132,7 @@ void loop()
   {
     //DHT11 Read
     char data [128] = {0};
-    snprintf(data,128,"{\"Id\":%llu,\"Temperature\":%d,\"Date\":%ld,\"Humidity\":%d}",chipid, temperature, time, humidity);
+    snprintf(data,128,"{\"Id\":%llu,\"Temperature\":%.2f,\"Date\":%ld,\"Humidity\":%.2f}",chipid, temperature, time, humidity);
     
     mqttClient.publish("dht/data", data);
     
